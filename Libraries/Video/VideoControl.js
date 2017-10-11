@@ -9,7 +9,7 @@
  * @providesModule VideoControl
  */
 
-const PropTypes = require('prop-types');
+const PropTypes = require('react/lib/ReactPropTypes');
 const React = require('React');
 const View = require('View');
 const Text = require('Text');
@@ -19,8 +19,6 @@ const UIManager = require('UIManager');
 const ReactNative = require('ReactNative');
 const StyleSheet = require('StyleSheet');
 const {videoTimeFormat} = require('VideoUtils');
-
-const createReactClass = require('create-react-class');
 const createGlyph = require('createGlyph');
 
 const ControlGlyphs = require('../../lib-assets/VideoControlGlyphs');
@@ -122,7 +120,7 @@ class VideoSliderBar extends React.Component {
  *
  * For example usage, see [MediaPlayerState](docs/mediaplayerstate.html)
  */
-const VideoControl = createReactClass({
+const VideoControl = React.createClass({
   propTypes: {
     ...View.propTypes,
 
@@ -189,7 +187,7 @@ const VideoControl = createReactClass({
       playStatus: playerState.playStatus,
       volume: playerState.volume,
       muted: playerState.muted,
-      duration: playerState.duration,
+      // duration: playerState.duration,
       currentTime: playerState.currentTime,
     });
   },
@@ -273,12 +271,6 @@ const VideoControl = createReactClass({
 
   _onClickProgress(progress) {
     this.props.playerState.seekTo(this.state.duration * progress);
-
-    // If media is not playing, we will not be getting progress updates, so let's
-    // manually update the progress bar to reflect the most recent progress click.
-    if (this.state.playStatus !== 'playing') {
-      this.setState({currentTime: this.state.duration * progress});
-    }
   },
 
   render: function() {
@@ -288,21 +280,21 @@ const VideoControl = createReactClass({
       ? this.state.currentTime / this.state.duration
       : 0;
     return (
-      <View style={[this.props.style, styles.container]}>
+      <View style={[this.props.style, styles.container, {display: this.props.display}]}>
         <VideoControlButton
           onClick={this._onPlayButtonClick}
           onButtonPress={this._onPlayButtonPress}
           onButtonRelease={this._onPlayButtonRelease}
           onExit={this._onPlayButtonExit}
-          style={styles.button}
+          style={[styles.button, {display: this.props.display}]}
           icon={playButtonIcon}
         />
-        <View style={styles.timerContainer}>
+        <View style={[styles.timerContainer, {display: this.props.display}]}>
           <VideoSliderBar
             fillColor={'#1099eb'}
             onClickProgress={this._onClickProgress}
             progress={videoProgress}
-            style={styles.progressBar}
+            style={[styles.progressBar, {display: this.props.display}]}
           />
           <Text style={[styles.text, styles.timerText, {fontSize: this.props.fontSize}]}>
             {`${videoTimeFormat(this.state.currentTime)}/${videoTimeFormat(this.state.duration)}`}
@@ -310,15 +302,15 @@ const VideoControl = createReactClass({
         </View>
         <VideoControlButton
           onClick={this._onMuteButtonClick}
-          style={styles.button}
+          style={[styles.button, {display: this.props.display}]}
           icon={muteButonIcon}
         />
-        <View style={styles.volumeContainer}>
+        <View style={[styles.volumeContainer, {display: this.props.display}]}>
           <VideoSliderBar
             fillColor={'#888'}
             onClickProgress={this._onVolumeClick}
             progress={this.state.volume}
-            style={styles.volumeBar}
+            style={[styles.volumeBar, {display: this.props.display}]}
           />
         </View>
       </View>
